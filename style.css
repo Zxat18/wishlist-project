@@ -1,98 +1,79 @@
-/* Сброс отступов для всех элементов */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Анимация появления карточек */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Стили для всей страницы */
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    padding: 20px;
+.card-item {
+    animation: fadeIn 0.3s ease-out;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Контейнер по центру страницы */
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.card-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
 }
 
-/* Заголовок */
-h1 {
+/* Стили для пустого списка */
+.empty-message {
     text-align: center;
-    margin-bottom: 30px;
-    color: #333;
+    padding: 60px 20px;
+    color: #6c757d;
 }
 
-/* Форма добавления — элементы в ряд */
-.add-item-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
+.empty-message i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
 }
 
-/* Поля ввода */
-.add-item-form input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    min-width: 150px;
+/* Иконка удаления */
+.delete-btn {
+    transition: all 0.2s;
 }
 
-/* Кнопка добавления */
-.add-item-form button {
-    padding: 10px 20px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* Кнопка при наведении */
-.add-item-form button:hover {
-    background: #45a049;
-}
-
-/* Список товаров */
-.wishlist ul {
-    list-style: none;
-}
-
-/* Каждый товар */
-.wishlist li {
-    padding: 15px;
-    margin: 10px 0;
-    background: #f9f9f9;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.delete-btn:hover {
+    background-color: #dc3545 !important;
+    transform: scale(1.1);
 }
 
 /* Ссылка на товар */
-.wishlist li a {
-    color: #2196F3;
+.item-link {
     text-decoration: none;
+    color: #0d6efd;
+    font-weight: 500;
 }
 
-.wishlist li a:hover {
+.item-link:hover {
+    color: #0a58ca;
     text-decoration: underline;
 }
 
-/* Кнопка удаления */
-.delete-btn {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
+/* Бейдж категории */
+.category-badge {
+    font-size: 0.85rem;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .btn-group .btn {
+        flex: 1 1 auto;
+        text-align: center;
+    }
 }
