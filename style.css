@@ -1,0 +1,98 @@
+/* Сброс отступов для всех элементов */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Стили для всей страницы */
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+}
+
+/* Контейнер по центру страницы */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Заголовок */
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* Форма добавления — элементы в ряд */
+.add-item-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+/* Поля ввода */
+.add-item-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 150px;
+}
+
+/* Кнопка добавления */
+.add-item-form button {
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Кнопка при наведении */
+.add-item-form button:hover {
+    background: #45a049;
+}
+
+/* Список товаров */
+.wishlist ul {
+    list-style: none;
+}
+
+/* Каждый товар */
+.wishlist li {
+    padding: 15px;
+    margin: 10px 0;
+    background: #f9f9f9;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Ссылка на товар */
+.wishlist li a {
+    color: #2196F3;
+    text-decoration: none;
+}
+
+.wishlist li a:hover {
+    text-decoration: underline;
+}
+
+/* Кнопка удаления */
+.delete-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}

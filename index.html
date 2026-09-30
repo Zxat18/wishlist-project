@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список желаний</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Мой Wishlist</h1>
+        
+        <!-- Форма для добавления товара -->
+        <div class="add-item-form">
+            <input type="text" id="itemName" placeholder="Название товара">
+            <input type="url" id="itemLink" placeholder="Ссылка на товар">
+            <input type="number" id="itemPrice" placeholder="Цена" step="0.01">
+            <button id="addBtn">Добавить</button>
+        </div>
+
+        <!-- Сюда будут добавляться товары -->
+        <div class="wishlist">
+            <h2>Список желаний</h2>
+            <ul id="wishlistItems"></ul>
+        </div>
+
+        <!-- Общая сумма -->
+        <div class="total">
+            <h3>Общая стоимость: <span id="totalPrice">0</span> руб.</h3>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
