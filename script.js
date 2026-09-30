@@ -1,6 +1,8 @@
 // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
 let wishlist = [];
 let currentFilter = 'all';
+let currentSort = 'default';
+let searchQuery = '';
 
 // ===== ЭЛЕМЕНТЫ DOM =====
 const addItemForm = document.getElementById('addItemForm');
@@ -10,6 +12,7 @@ const itemPriceInput = document.getElementById('itemPrice');
 const itemCategoryInput = document.getElementById('itemCategory');
 const wishlistItems = document.getElementById('wishlistItems');
 const totalPriceElement = document.getElementById('totalPrice');
+const searchInput = document.getElementById('searchInput');
 
 // ===== ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ =====
 window.addEventListener('DOMContentLoaded', () => {
@@ -23,6 +26,14 @@ addItemForm.addEventListener('submit', function(e) {
     addItem();
 });
 
+// ===== ОБРАБОТЧИК ПОИСКА =====
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        searchQuery = e.target.value.toLowerCase();
+        renderWishlist();
+    });
+}
+
 // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ТОВАРА =====
 function addItem() {
     if (!validateInputs()) {
@@ -30,7 +41,7 @@ function addItem() {
     }
 
     const item = {
-        id: Date.now(), // Уникальный ID
+        id: Date.now(),
         name: itemNameInput.value.trim(),
         link: itemLinkInput.value.trim(),
         price: parseFloat(itemPriceInput.value),
@@ -41,12 +52,9 @@ function addItem() {
     wishlist.push(item);
     saveToLocalStorage();
     
-    // Очистка формы
     addItemForm.reset();
-    
     renderWishlist();
     
-    // Показать уведомление
     showNotification('Товар добавлен!', 'success');
 }
 
@@ -64,8 +72,35 @@ function deleteItem(id) {
 function filterItems(category) {
     currentFilter = category;
     
-    // Обновляем активную кнопку
-    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+    // Обновляем активную кнопку фильтра
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Находим нажатую кнопку по тексту
+    const categoryNames = {
+        'all': 'Все',
+        'electronics': 'Электроника',
+        'clothes': 'Одежда',
+        'books': 'Книги',
+        'other': 'Другое'
+    };
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.textContent.trim() === categoryNames[category]) {
+            btn.classList.add('active');
+        }
+    });
+    
+    renderWishlist();
+}
+
+// ===== ФУНКЦИЯ СОРТИРОВКИ =====
+function sortItems(type) {
+    currentSort = type;
+    
+    // Обновляем активную кнопку сортировки
+    document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
@@ -77,10 +112,26 @@ function filterItems(category) {
 function renderWishlist() {
     wishlistItems.innerHTML = '';
     
-    // Фильтруем товары
-    const filteredItems = currentFilter === 'all' 
+    // 1. Фильтруем по категории
+    let filteredItems = currentFilter === 'all' 
         ? wishlist 
         : wishlist.filter(item => item.category === currentFilter);
+    
+    // 2. Фильтруем по поиску
+    if (searchQuery) {
+        filteredItems = filteredItems.filter(item => 
+            item.name.toLowerCase().includes(searchQuery)
+        );
+    }
+    
+    // 3. Сортируем
+    if (currentSort === 'price-asc') {
+        filteredItems.sort((a, b) => a.price - b.price);
+    } else if (currentSort === 'price-desc') {
+        filteredItems.sort((a, b) => b.price - a.price);
+    } else if (currentSort === 'name') {
+        filteredItems.sort((a, b) => a.name.localeCompare(b.name));
+    }
     
     // Если список пуст
     if (filteredItems.length === 0) {
@@ -194,7 +245,6 @@ function loadFromLocalStorage() {
 
 // ===== УВЕДОМЛЕНИЯ =====
 function showNotification(message, type) {
-    // Создаём элемент уведомления
     const notification = document.createElement('div');
     notification.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'} alert-dismissible fade show position-fixed`;
     notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
@@ -205,7 +255,6 @@ function showNotification(message, type) {
     
     document.body.appendChild(notification);
     
-    // Удаляем через 3 секунды
     setTimeout(() => {
         notification.remove();
     }, 3000);
