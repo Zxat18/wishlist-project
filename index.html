@@ -71,14 +71,30 @@
             </div>
         </div>
         
+        <!-- Поиск и сортировка -->
+        <div class="row mb-3">
+            <div class="col-md-6 mb-2">
+                <input type="text" id="searchInput" class="form-control" placeholder="🔍 Поиск товара...">
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-secondary sort-btn active" onclick="sortItems('default')">По умолчанию</button>
+                    <button type="button" class="btn btn-outline-secondary sort-btn" onclick="sortItems('price-asc')">Цена ↑</button>
+                    <button type="button" class="btn btn-outline-secondary sort-btn" onclick="sortItems('price-desc')">Цена ↓</button>
+                    <button type="button" class="btn btn-outline-secondary sort-btn" onclick="sortItems('name')">По названию</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Фильтры -->
         <div class="row mb-3">
             <div class="col-12">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-primary active" onclick="filterItems('all')">Все</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('electronics')">Электроника</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('clothes')">Одежда</button>
-                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('books')">Книги</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn active" onclick="filterItems('all')">Все</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" onclick="filterItems('electronics')">Электроника</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" onclick="filterItems('clothes')">Одежда</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" onclick="filterItems('books')">Книги</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" onclick="filterItems('other')">Другое</button>
                 </div>
             </div>
         </div>
