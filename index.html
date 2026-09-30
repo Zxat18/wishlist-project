@@ -3,33 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список желаний</title>
+    <title>Мой Wishlist</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Наши стили -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="container">
-        <h1>Мой Wishlist</h1>
+<body class="bg-light">
+    <div class="container py-5">
+        <!-- Заголовок -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 text-primary mb-2">
+                    <i class="bi bi-gift-fill"></i> Мой Wishlist
+                </h1>
+                <p class="text-muted">Список моих желаний</p>
+            </div>
+        </div>
         
-        <!-- Форма для добавления товара -->
-        <div class="add-item-form">
-            <input type="text" id="itemName" placeholder="Название товара">
-            <input type="url" id="itemLink" placeholder="Ссылка на товар">
-            <input type="number" id="itemPrice" placeholder="Цена" step="0.01">
-            <button id="addBtn">Добавить</button>
+        <!-- Форма добавления -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Добавить товар</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="addItemForm">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Название товара</label>
+                                    <input type="text" class="form-control" id="itemName" placeholder="Например: iPhone 15" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Ссылка на товар</label>
+                                    <input type="url" class="form-control" id="itemLink" placeholder="https://..." required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Цена (руб.)</label>
+                                    <input type="number" class="form-control" id="itemPrice" placeholder="0" step="0.01" min="0" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Категория</label>
+                                    <select class="form-select" id="itemCategory">
+                                        <option value="electronics">Электроника</option>
+                                        <option value="clothes">Одежда</option>
+                                        <option value="books">Книги</option>
+                                        <option value="other">Другое</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-plus-lg"></i> Добавить в список
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Сюда будут добавляться товары -->
-        <div class="wishlist">
-            <h2>Список желаний</h2>
-            <ul id="wishlistItems"></ul>
+        
+        <!-- Фильтры -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" onclick="filterItems('all')">Все</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('electronics')">Электроника</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('clothes')">Одежда</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterItems('books')">Книги</button>
+                </div>
+            </div>
         </div>
-
-        <!-- Общая сумма -->
-        <div class="total">
-            <h3>Общая стоимость: <span id="totalPrice">0</span> руб.</h3>
+        
+        <!-- Список товаров -->
+        <div class="row" id="wishlistContainer">
+            <div class="col-12" id="wishlistItems">
+                <!-- Сюда будут добавляться карточки товаров -->
+            </div>
+        </div>
+        
+        <!-- Итоговая сумма -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-success text-white shadow-lg">
+                    <div class="card-body text-center py-4">
+                        <h3 class="mb-2">Общая стоимость:</h3>
+                        <h1 class="display-4 mb-0" id="totalPrice">0 ₽</h1>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Наш JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
