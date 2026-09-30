@@ -1,15 +1,176 @@
-// ===== ПОЛУЧАЕМ ЭЛЕМЕНТЫ СО СТРАНИЦЫ =====
+// ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
+let wishlist = [];
+let currentFilter = 'all';
+
+// ===== ЭЛЕМЕНТЫ DOM =====
+const addItemForm = document.getElementById('addItemForm');
 const itemNameInput = document.getElementById('itemName');
 const itemLinkInput = document.getElementById('itemLink');
 const itemPriceInput = document.getElementById('itemPrice');
-const addBtn = document.getElementById('addBtn');
+const itemCategoryInput = document.getElementById('itemCategory');
 const wishlistItems = document.getElementById('wishlistItems');
 const totalPriceElement = document.getElementById('totalPrice');
 
-// ===== ХРАНИЛИЩЕ ДАННЫХ =====
-let wishlist = [];
+// ===== ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ =====
+window.addEventListener('DOMContentLoaded', () => {
+    loadFromLocalStorage();
+    renderWishlist();
+});
 
-// ===== ФУНКЦИЯ ПРОВЕРКИ URL =====
+// ===== ОБРАБОТЧИК ОТПРАВКИ ФОРМЫ =====
+addItemForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    addItem();
+});
+
+// ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ТОВАРА =====
+function addItem() {
+    if (!validateInputs()) {
+        return;
+    }
+
+    const item = {
+        id: Date.now(), // Уникальный ID
+        name: itemNameInput.value.trim(),
+        link: itemLinkInput.value.trim(),
+        price: parseFloat(itemPriceInput.value),
+        category: itemCategoryInput.value,
+        date: new Date().toISOString()
+    };
+
+    wishlist.push(item);
+    saveToLocalStorage();
+    
+    // Очистка формы
+    addItemForm.reset();
+    
+    renderWishlist();
+    
+    // Показать уведомление
+    showNotification('Товар добавлен!', 'success');
+}
+
+// ===== ФУНКЦИЯ УДАЛЕНИЯ ТОВАРА =====
+function deleteItem(id) {
+    if (confirm('Удалить этот товар из списка?')) {
+        wishlist = wishlist.filter(item => item.id !== id);
+        saveToLocalStorage();
+        renderWishlist();
+        showNotification('Товар удалён', 'info');
+    }
+}
+
+// ===== ФУНКЦИЯ ФИЛЬТРАЦИИ =====
+function filterItems(category) {
+    currentFilter = category;
+    
+    // Обновляем активную кнопку
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    renderWishlist();
+}
+
+// ===== ФУНКЦИЯ ОТРИСОВКИ СПИСКА =====
+function renderWishlist() {
+    wishlistItems.innerHTML = '';
+    
+    // Фильтруем товары
+    const filteredItems = currentFilter === 'all' 
+        ? wishlist 
+        : wishlist.filter(item => item.category === currentFilter);
+    
+    // Если список пуст
+    if (filteredItems.length === 0) {
+        wishlistItems.innerHTML = `
+            <div class="empty-message">
+                <i class="bi bi-inbox"></i>
+                <h4>Список желаний пуст</h4>
+                <p>Добавьте первый товар выше!</p>
+            </div>
+        `;
+        totalPriceElement.textContent = '0 ₽';
+        return;
+    }
+    
+    // Считаем общую сумму
+    let total = 0;
+    
+    // Создаём карточки для каждого товара
+    filteredItems.forEach(item => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4 mb-4';
+        
+        const categoryNames = {
+            'electronics': '📱 Электроника',
+            'clothes': '👕 Одежда',
+            'books': '📚 Книги',
+            'other': '📦 Другое'
+        };
+        
+        col.innerHTML = `
+            <div class="card h-100 shadow-sm card-item">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary category-badge">${categoryNames[item.category]}</span>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" onclick="deleteItem(${item.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <h5 class="card-title mb-2">
+                        <a href="${item.link}" target="_blank" class="item-link">
+                            ${item.name}
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </h5>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="text-muted">
+                            <i class="bi bi-tag"></i> Цена:
+                        </span>
+                        <h4 class="text-success mb-0">${item.price.toLocaleString('ru-RU')} ₽</h4>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        wishlistItems.appendChild(col);
+        total += item.price;
+    });
+    
+    // Обновляем общую сумму
+    totalPriceElement.textContent = total.toLocaleString('ru-RU') + ' ₽';
+}
+
+// ===== ВАЛИДАЦИЯ ВВОДА =====
+function validateInputs() {
+    const name = itemNameInput.value.trim();
+    const link = itemLinkInput.value.trim();
+    const price = parseFloat(itemPriceInput.value);
+
+    if (name === '' || name.length < 2) {
+        showNotification('Название должно содержать минимум 2 символа', 'warning');
+        itemNameInput.focus();
+        return false;
+    }
+
+    if (link === '' || !isValidURL(link)) {
+        showNotification('Введите корректную ссылку (https://...)', 'warning');
+        itemLinkInput.focus();
+        return false;
+    }
+
+    if (isNaN(price) || price <= 0) {
+        showNotification('Цена должна быть больше нуля', 'warning');
+        itemPriceInput.focus();
+        return false;
+    }
+
+    return true;
+}
+
+// ===== ПРОВЕРКА URL =====
 function isValidURL(string) {
     try {
         new URL(string);
@@ -19,162 +180,33 @@ function isValidURL(string) {
     }
 }
 
-// ===== ФУНКЦИЯ ПРОВЕРКИ ВСЕХ ПОЛЕЙ =====
-function validateInputs() {
-    const name = itemNameInput.value.trim();
-    const link = itemLinkInput.value.trim();
-    const price = itemPriceInput.value.trim();
+// ===== LOCAL STORAGE =====
+function saveToLocalStorage() {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+}
 
-    // Проверяем название
-    if (name === '') {
-        alert('Название товара не может быть пустым!');
-        itemNameInput.focus();
-        return false;
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('wishlist');
+    if (saved) {
+        wishlist = JSON.parse(saved);
     }
+}
 
-    if (name.length < 2) {
-        alert('Название должно содержать минимум 2 символа!');
-        itemNameInput.focus();
-        return false;
-    }
-
-    // Проверяем ссылку
-    if (link === '') {
-        alert('Ссылка на товар обязательна!');
-        itemLinkInput.focus();
-        return false;
-    }
-
-    if (!isValidURL(link)) {
-        alert('Неверный формат ссылки! Пример: https://example.com');
-        itemLinkInput.focus();
-        return false;
-    }
-
-    // Проверяем цену
-    if (price === '') {
-        alert('Цена не может быть пустой!');
-        itemPriceInput.focus();
-        return false;
-    }
-
-    const priceNum = parseFloat(price);
+// ===== УВЕДОМЛЕНИЯ =====
+function showNotification(message, type) {
+    // Создаём элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
     
-    if (isNaN(priceNum)) {
-        alert('Цена должна быть числом!');
-        itemPriceInput.focus();
-        return false;
-    }
-
-    if (priceNum <= 0) {
-        alert('Цена должна быть больше нуля!');
-        itemPriceInput.focus();
-        return false;
-    }
-
-    if (priceNum > 1000000000) {
-        alert('Цена слишком большая!');
-        itemPriceInput.focus();
-        return false;
-    }
-
-    return true;
-}
-
-// ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ТОВАРА =====
-function addItem() {
-    // Сначала проверяем все поля
-    if (!validateInputs()) {
-        return;  // Если проверка не прошла — выходим
-    }
-
-    // Получаем значения (теперь мы уверены, что они корректны)
-    const name = itemNameInput.value.trim();
-    const link = itemLinkInput.value.trim();
-    const price = parseFloat(itemPriceInput.value);
-
-    // Создаём объект товара
-    const item = {
-        name: name,
-        link: link,
-        price: price
-    };
-
-    // Добавляем товар в массив
-    wishlist.push(item);
-
-    // Очищаем поля ввода
-    itemNameInput.value = '';
-    itemLinkInput.value = '';
-    itemPriceInput.value = '';
-
-    // Обновляем отображение списка
-    renderWishlist();
-}
-
-// ===== ФУНКЦИЯ УДАЛЕНИЯ ТОВАРА =====
-function deleteItem(index) {
-    wishlist.splice(index, 1);
-    renderWishlist();
-}
-
-// ===== ФУНКЦИЯ ОТРИСОВКИ СПИСКА =====
-function renderWishlist() {
-    wishlistItems.innerHTML = '';
-    let total = 0;
-
-    wishlist.forEach((item, index) => {
-        const li = document.createElement('li');
-        
-        li.innerHTML = `
-            <span>
-                <a href="${item.link}" target="_blank">${item.name}</a>
-                - ${item.price.toFixed(2)} руб.
-            </span>
-            <button class="delete-btn" onclick="deleteItem(${index})">Удалить</button>
-        `;
-        
-        wishlistItems.appendChild(li);
-        total += item.price;
-    });
-
-    totalPriceElement.textContent = total.toFixed(2);
-}
-
-// ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
-addBtn.addEventListener('click', addItem);
-
-itemPriceInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        addItem();
-    }
-});
-
-// ===== ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: только цифры в поле цены =====
-itemPriceInput.addEventListener('input', function(e) {
-    // Удаляем всё, что не является цифрой или точкой
-    this.value = this.value.replace(/[^0-9.]/g, '');
+    document.body.appendChild(notification);
     
-    // Не даём ввести больше одной точки
-    const parts = this.value.split('.');
-    if (parts.length > 2) {
-        this.value = parts[0] + '.' + parts.slice(1).join('');
-    }
-});
-
-// ===== ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА: проверка ссылки при вводе =====
-itemLinkInput.addEventListener('blur', function() {
-    const link = this.value.trim();
-    if (link !== '' && !isValidURL(link)) {
-        this.style.borderColor = 'red';
-        this.title = 'Неверный формат ссылки';
-    } else {
-        this.style.borderColor = '';
-        this.title = '';
-    }
-});
-
-itemLinkInput.addEventListener('input', function() {
-    this.style.borderColor = '';
-    this.title = '';
-});
+    // Удаляем через 3 секунды
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
