@@ -273,4 +273,3 @@ function clearAllItems() {
         showNotification('Список очищен', 'info');
     }
 }
-
