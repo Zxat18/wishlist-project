@@ -8,6 +8,7 @@ let searchQuery = '';
 const addItemForm = document.getElementById('addItemForm');
 const itemNameInput = document.getElementById('itemName');
 const itemLinkInput = document.getElementById('itemLink');
+const itemQuantityInput = document.getElementById('itemQuantity');
 const itemPriceInput = document.getElementById('itemPrice');
 const itemCategoryInput = document.getElementById('itemCategory');
 const wishlistItems = document.getElementById('wishlistItems');
@@ -40,12 +41,15 @@ function addItem() {
         return;
     }
 
+    const quantity = parseInt(itemQuantityInput.value) || 1;
+
     const item = {
         id: Date.now(),
         name: itemNameInput.value.trim(),
         link: itemLinkInput.value.trim(),
-        price: parseFloat(itemPriceInput.value),
+        price: parseFloat(itemPriceInput.value) * quantity,
         category: itemCategoryInput.value,
+        quantity: quantity,
         date: new Date().toISOString()
     };
 
@@ -181,6 +185,7 @@ function renderWishlist() {
                             <i class="bi bi-tag"></i> Цена:
                         </span>
                         <h4 class="text-success mb-0">${item.price.toLocaleString('ru-RU')} ₽</h4>
+                        ${item.quantity > 1 ? `<small class="text-muted">${item.quantity} шт.</small>` : ''}
                     </div>
                 </div>
             </div>
@@ -259,3 +264,13 @@ function showNotification(message, type) {
         notification.remove();
     }, 3000);
 }
+
+function clearAllItems() {
+    if (confirm('Вы уверены что хотите удалить весь список?')) {
+        wishlist = [];
+        localStorage.removeItem('wishlist');
+        renderWishlist();
+        showNotification('Список очищен', 'info');
+    }
+}
+
